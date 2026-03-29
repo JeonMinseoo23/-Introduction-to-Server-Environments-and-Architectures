@@ -116,6 +116,6 @@ lsb_release -a
  
 ---
  
----
 
+# Lab 2a — Total Cost of Ownership (TCO)
 
