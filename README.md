@@ -105,6 +105,8 @@ lsb_release -a
  
 ---
  
+## Screenshots
+
 **01 — VMware New VM Wizard (ISO selected & Ubuntu detected)**
 ![VMware New VM Wizard](screenshots/01-vmware-new-vm.png)
 ```
