@@ -11,8 +11,6 @@ Murdoch ID: 36060198
  
 **Module:** BRG-27 ISEA
 **Day:** 1a
-**Status:** Completed
- 
 ---
  
 ## Objective
