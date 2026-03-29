@@ -9,11 +9,8 @@ Murdoch ID: 36060198
 
 # Lab 1a — Setting Up Linux
  
-**Module:** BRG-27 ISEA
+**Module:** BRG-27 ISEA - **Day:** 1a
 <br>
-**Day:** 1a
-<br>
----
  
 ## Objective
  
