@@ -387,7 +387,7 @@ The Canon PIXMA G3020 is significantly cheaper over five years. Its ink tank sys
 
 ## Objective
 
-Launch and configure a cloud virtual machine on Microsoft Azure, install and serve content using Apache2, and demonstrate file management, network access, and remote connectivity. Then extend the lab with Bash scripting — writing and executing shell scripts for system information, loops, conditionals, and resource monitoring.
+Launch and configure a cloud virtual machine on Microsoft Azure, install and serve content using Apache2, and demonstrate file management, network access, and remote connectivity. The lab was then extended with Bash scripting — writing and executing shell scripts for system information, loops, conditionals, and automated resource monitoring.
 
 ---
 
@@ -409,27 +409,21 @@ Launch and configure a cloud virtual machine on Microsoft Azure, install and ser
 
 ## Learning Objectives
 
-- Launch and configure a cloud VM on Azure
+- Launch and configure a cloud VM on Microsoft Azure
 - Configure Network Security Group rules to allow SSH and HTTP traffic
 - Connect to a remote VM using SSH with a private key
-- Install and verify Apache2 web server
-- Edit live web content using nano
-- Transfer files using `wget`, `sudo cp`, and `scp`
-- Set file permissions using `chmod`
-- Test network latency using `ping`
-- Write and execute Bash scripts using `echo`, `for`, `if`, `read`, and system monitoring commands
+- Install and verify the Apache2 web server
+- Edit live web content using the nano text editor
+- Transfer files remotely using wget, sudo cp, and scp
+- Set file permissions using chmod
+- Test network latency using ping
+- Write and execute Bash scripts incorporating conditionals, loops, and system monitoring
 
 ---
 
 ## Part 1 — SSH into the Azure VM
 
-Connected to the Azure VM from Windows Command Prompt using the downloaded private key. The key was reset via the Azure portal after the original key was not saved at creation time.
-
-```bash
-ssh -i C:\Users\user\Downloads\my-vm-key.pem azureuser@98.70.33.154
-```
-
-On first connection, confirmed the host fingerprint and accepted the connection. The terminal prompt changed to `azureuser@my-vm`, confirming a successful SSH session.
+The Azure VM was accessed from Windows Command Prompt using a private key downloaded from the Azure portal. The original key had not been saved at the time the VM was created, so it was reset through the Azure portal's Reset Password interface, which generated a new key pair and allowed the private key to be downloaded. The SSH command was then run specifying the key file path and the VM's public IP address. The terminal prompt changed to `azureuser@my-vm`, confirming a successful remote connection.
 
 ![SSH connected to Azure VM](lab-2a/01-ssh-connected.png)
 
@@ -437,11 +431,7 @@ On first connection, confirmed the host fingerprint and accepted the connection.
 
 ## Part 2 — Update Package List
 
-Updated the package index to ensure all installations use the latest available versions.
-
-```bash
-sudo apt update
-```
+Before installing any software, the package index was updated to ensure all subsequent installations would pull the latest available versions from the Ubuntu repositories.
 
 ![apt update output](lab-2a/02-apt-update.png)
 
@@ -449,11 +439,7 @@ sudo apt update
 
 ## Part 3 — Install Apache2
 
-Installed the Apache2 web server. The package manager resolved and installed all dependencies automatically.
-
-```bash
-sudo apt install apache2
-```
+Apache2 was installed using the package manager. All dependencies were resolved and installed automatically, and the web server service was started immediately upon installation completion.
 
 ![Apache2 installation](lab-2a/03-apache-install.png)
 
@@ -461,7 +447,7 @@ sudo apt install apache2
 
 ## Part 4 — Configure Network Security Group
 
-By default, only port 22 (SSH) was open in the Azure Network Security Group. An inbound rule was added to allow HTTP traffic on port 80, making the web server publicly accessible.
+By default, only port 22 (SSH) was permitted in the Azure Network Security Group attached to the VM. A new inbound rule was created to allow HTTP traffic on port 80, which is required for the web server to be publicly accessible from a browser.
 
 | Rule | Port | Protocol | Action |
 |------|------|----------|--------|
@@ -474,11 +460,7 @@ By default, only port 22 (SSH) was open in the Azure Network Security Group. An 
 
 ## Part 5 — Verify Apache in Browser
 
-Accessed the VM's public IP address in a browser to confirm Apache2 was running and serving the default Ubuntu welcome page.
-
-```
-http://98.70.33.154
-```
+The VM's public IP address was entered into a browser to confirm Apache2 was running and serving content. The default Ubuntu Apache2 welcome page loaded successfully, confirming the web server was live and the port 80 rule was working correctly.
 
 ![Apache2 default page in browser](lab-2a/05-apache-browser.png)
 
@@ -486,86 +468,42 @@ http://98.70.33.154
 
 ## Part 6 — Edit index.html Using Nano
 
-Opened the default Apache web page in the nano text editor to make a live modification.
-
-```bash
-sudo nano /var/www/html/index.html
-```
+The default Apache web page was opened in the nano text editor directly on the server. A custom heading was added to the HTML body to verify that edits to files in the web directory take effect immediately without requiring an Apache restart.
 
 ![index.html open in nano](lab-2a/06-edit-index.png)
 
 ---
 
-## Part 7 — Test Modified Page in Browser
+## Part 7 — Replace index.html with Custom Page and Add Hyperlinks
 
-After saving the changes in nano, the browser was refreshed to confirm the modification was live. The custom heading "Hello from my Audrey Azure WM" appeared on the page, confirming that edits to `/var/www/html/index.html` are served immediately without restarting Apache.
-
-![Modified page in browser](lab-2a/07-modified-browser.png)
-
----
-
-## Part 8 — Replace index.html with Custom Page and Add Hyperlinks
-
-Replaced the entire default Apache page with a clean custom HTML page containing anchor tags linking to external resources. The file was written directly using `tee` to avoid nano paste limitations.
-
-```bash
-sudo tee /var/www/html/index.html << 'EOF'
-<!DOCTYPE html>
-<html>
-<head>
-  <title>My Azure Web Server</title>
-</head>
-<body>
-  <h1>Hello from my Azure VM!</h1>
-  <p>This page is hosted on an Apache2 web server running on Ubuntu 24.04.</p>
-  <h2>Useful Links</h2>
-  <ul>
-    <li><a href="https://ubuntu.com">Ubuntu Official Site</a></li>
-    <li><a href="https://httpd.apache.org">Apache HTTP Server</a></li>
-    <li><a href="https://azure.microsoft.com">Microsoft Azure</a></li>
-  </ul>
-</body>
-</html>
-EOF
-```
+The entire default Apache page was replaced with a clean custom HTML page. The new page included a heading, a descriptive paragraph, and a list of anchor tags linking to external resources — demonstrating the use of HTML hyperlinks served from a live cloud web server. The file was written directly to disk using a heredoc approach to avoid paste limitations encountered in the terminal session.
 
 ![Custom page with hyperlinks in browser](lab-2a/08-hyperlinks-browser.png)
 
 ---
 
-## Part 9 — Download and Copy Files Using wget and sudo cp
+## Part 8 — Download and Copy Files Using wget and sudo cp
 
-Downloaded an image file from a remote URL using `wget`, then copied it into the Apache web directory using `sudo cp`, demonstrating remote file retrieval and web directory management.
-
-```bash
-wget https://www.w3schools.com/html/pic_trulli.jpg
-sudo cp pic_trulli.jpg /var/www/html/
-```
+A remote image file was downloaded to the VM using wget, then copied into the Apache web directory using sudo cp. This demonstrated how files can be retrieved from the internet directly on the server and placed into a publicly served directory without any local machine involvement.
 
 ![wget download and sudo cp output](lab-2a/09-wget-copy.png)
 
 ---
 
-## Part 10 — Test Access from Mobile Device
+## Part 9 — Test Access from Mobile Device
 
-Accessed the web server from a mobile phone browser to confirm public accessibility across different devices and networks.
+The web server was accessed from a mobile phone browser using the same public IP address to confirm that the server was reachable across different devices and network types, verifying its public accessibility.
 
 ![Web server accessed from mobile browser](lab-2a/10-mobile-browser.png)
 
 ---
 
-## Part 11 — Network Latency Testing with ping
+## Part 10 — Network Latency Testing with ping
 
-Used `ping` to test network latency from the VM to servers in different regions. All responses returned under 4ms because Google distributes its servers globally — requests hit the nearest Google node regardless of the domain suffix.
+The ping command was used to measure network latency from the VM to servers in three different geographic regions. All responses returned under 4ms, which reflects Google's globally distributed infrastructure — requests are automatically routed to the nearest available node regardless of the domain suffix used.
 
-```bash
-ping -c 4 google.com
-ping -c 4 google.co.jp
-ping -c 4 google.co.za
-```
-
-| Target | Avg Latency |
-|--------|-------------|
+| Target | Average Latency |
+|--------|----------------|
 | google.com | 3.497 ms |
 | google.co.jp | 3.072 ms |
 | google.co.za | 3.170 ms |
@@ -574,142 +512,57 @@ ping -c 4 google.co.za
 
 ---
 
-## Part 12 — File Transfer Using SCP
+## Part 11 — File Transfer Using SCP
 
-Transferred a file from the local Windows machine to the Azure VM using `scp`, demonstrating secure remote file copying with a private key.
-
-```bash
-scp -i C:\Users\user\Downloads\my-vm-key.pem C:\Users\user\Downloads\my-vm-key.pem azureuser@98.70.33.154:/home/azureuser/
-```
+A file was securely transferred from the local Windows machine to the Azure VM using SCP with the private key for authentication. This demonstrated an alternative method of getting files onto a remote server — pushing directly from the local machine rather than pulling from a remote URL.
 
 ![SCP file transfer output](lab-2a/12-scp-transfer.png)
 
 ---
 
-## Part 13 — Set File Permissions Using chmod
+## Part 12 — Set File Permissions Using chmod
 
-Set restrictive permissions on the private key file using `chmod 600`, ensuring only the owner can read or write the file. This is standard security practice for SSH keys.
-
-```bash
-chmod 600 /home/azureuser/my-vm-key.pem
-ls -la /home/azureuser/my-vm-key.pem
-```
-
-The output `-rw-------` confirms the correct permission set was applied.
+Restrictive permissions were applied to the private key file using chmod 600, ensuring only the file owner can read or write it. The result was confirmed using ls -la, which returned `-rw-------` — the standard required permission level for SSH private keys. If a key file has broader permissions, SSH will refuse to use it as a security measure.
 
 ![chmod 600 and ls -la output](lab-2a/13-chmod.png)
 
 ---
 
-## Part 14 — Bash Lab: Navigate File System and Manage Files
+## Part 13 — Bash Lab: Navigate File System and Manage Files
 
-### Part 14a — Create and Navigate Directories
+### Directory Creation and Navigation
 
-Created a working directory structure for the Bash scripting exercises.
-
-```bash
-mkdir mylab
-cd mylab
-mkdir scripts docs
-ls
-```
+A working directory structure was created for the Bash scripting exercises. A main lab directory was created, then two subdirectories — one for scripts and one for documentation — were created inside it. The ls command was used to confirm the structure was in place.
 
 ![mkdir and directory navigation](lab-2a/14-mkdir-navigate.png)
 
-### Part 14b — File Operations: Create, Copy, Rename
+### File Operations
 
-Created a file using `touch`, copied it with `cp`, and renamed the copy using `mv` to demonstrate core file management commands.
-
-```bash
-touch docs/notes.txt
-cp docs/notes.txt docs/notes_backup.txt
-mv docs/notes_backup.txt docs/renamed.txt
-ls docs/
-```
+Core file management commands were practised by creating a new file, copying it under a different name, and renaming the copy using the move command. Listing the directory contents afterwards confirmed all three operations completed successfully.
 
 ![File operations — touch, cp, mv, ls](lab-2a/14b-file-commands.png)
 
 ---
 
-## Part 15 — Bash Script: hello_world.sh
+## Part 14 — Bash Script: hello_world.sh
 
-Created a basic Bash script demonstrating the shebang line, `echo` output, and command substitution with `$(hostname)` and `$(date)`.
-
-```bash
-nano scripts/hello_world.sh
-```
-
-```bash
-#!/bin/bash
-echo "Hello, World!"
-echo "This script is running on: $(hostname)"
-echo "Current date and time: $(date)"
-```
-
-Made the script executable using `chmod 777` and ran it.
-
-```bash
-chmod 777 scripts/hello_world.sh
-./scripts/hello_world.sh
-```
+A basic shell script was written and saved using nano. It opened with the shebang line to specify the Bash interpreter, then used echo to print a greeting, and command substitution to dynamically display the hostname and current date and time at runtime. The script was made executable by changing its permissions, then run directly from the terminal. The output confirmed all three lines printed correctly with live system values.
 
 ![hello_world.sh execution output](lab-2a/15-hello-world-run.png)
 
 ---
 
-## Part 16 — Bash Script: system_info.sh
+## Part 15 — Bash Script: system_info.sh
 
-Created a script using a `for` loop for a countdown, `read` for interactive input, and `if/elif/else` to evaluate the user's response.
-
-```bash
-#!/bin/bash
-echo "System Information Script"
-echo "========================="
-
-for i in 3 2 1; do
-  echo "Starting in $i..."
-done
-
-echo "Enter your name:"
-read name
-
-if [ "$name" = "" ]; then
-  echo "No name entered."
-elif [ "$name" = "admin" ]; then
-  echo "Welcome, Administrator!"
-else
-  echo "Hello, $name! Welcome to $(hostname)."
-fi
-```
-
-When run with the input "Audrey", the script completed the countdown and returned a personalised greeting.
+A more structured script was written incorporating a for loop to produce a countdown from three to one, the read command to accept interactive input from the user, and an if/elif/else conditional block to evaluate what was typed and return an appropriate response. When run with the name "Audrey", the script completed the countdown and returned a personalised greeting — confirming the loop and conditional logic both functioned as expected.
 
 ![system_info.sh execution output](lab-2a/16-system-info-run.png)
 
 ---
 
-## Part 17 — Bash Script: resource_monitor.sh
+## Part 16 — Bash Script: resource_monitor.sh
 
-Created a monitoring script that accepts user input to control iteration count, then uses `free -h`, `df -h`, and `top` to report memory, disk, and CPU usage at each interval with a `sleep` delay between checks.
-
-```bash
-#!/bin/bash
-echo "How many times to monitor? (e.g. 3):"
-read iterations
-for i in $(seq 1 $iterations); do
-  echo "=== Check $i ==="
-  echo "-- Memory --"
-  free -h
-  echo "-- Disk --"
-  df -h /
-  echo "-- CPU Load --"
-  top -bn1 | grep "Cpu(s)"
-  sleep 2
-done
-echo "Monitoring complete."
-```
-
-Run with 2 iterations — the output showed memory at 419Mi used of 846Mi, disk at 8% used, and CPU idle above 88%.
+A resource monitoring script was written that first asks the user how many monitoring cycles to run, then loops through each cycle — displaying memory usage, disk usage, and CPU load at each iteration with a two-second pause between checks. Running the script with two iterations showed memory at 419Mi used of 846Mi total, disk at 8% used, and CPU idle above 88%, confirming the server was running well within its resource limits.
 
 ![resource_monitor.sh execution output](lab-2a/17-resource-monitor-run.png)
 
@@ -719,51 +572,35 @@ Run with 2 iterations — the output showed memory at 419Mi used of 846Mi, disk 
 
 **What were the benefits of cloud deployment over local virtualisation?**
 
-Cloud deployment removes the need for local hardware provisioning. The VM was available within minutes, accessible from any device, and could be stopped when not in use to avoid charges. Local virtualisation requires dedicated hardware and is not remotely accessible by default.
+Cloud deployment removes the need for dedicated local hardware. The VM was provisioned within minutes, accessible from any device with a network connection, and could be stopped when idle to avoid unnecessary charges. Local virtualisation requires a capable host machine and is not remotely accessible without additional configuration.
 
 **How does Apache serve files, and how did you verify this?**
 
-Apache listens on port 80 for HTTP requests and serves files from `/var/www/html/`. Verification was done by accessing the public IP in a browser and confirming the correct page loaded, including after edits to `index.html`.
+Apache listens on port 80 for incoming HTTP requests and serves files from the `/var/www/html/` directory. Verification was done by accessing the VM's public IP in a browser and confirming the correct page loaded — both the default page and the modified custom page — reflecting changes made directly to the files on the server.
 
 **What did you learn about file ownership and permissions?**
 
-The `chmod 600` command sets a file to owner-read and owner-write only (`-rw-------`). This is the required permission for SSH private keys — if the key is world-readable, SSH will refuse to use it as a security measure.
+The chmod command controls who can read, write, or execute a file. Setting a file to 600 restricts access to the owner only. This is the required permission for SSH private keys — if the key file is readable by other users, SSH will reject it as a security risk.
 
 **What risks are associated with leaving instances running?**
 
-A running VM continues to accumulate compute charges even when idle. It also remains exposed to the internet, increasing the attack surface. Azure's auto-shutdown feature was configured to shut down the VM at 7:00 PM UTC to mitigate both risks.
+A running VM continues to accumulate compute charges even when no work is being performed on it. It also remains exposed to the internet, which increases the attack surface. Azure's auto-shutdown feature was configured to power down the VM at 7:00 PM UTC daily to address both concerns.
 
 **How would you explain the difference between DNS and /etc/hosts to a client?**
 
-DNS is a distributed, globally accessible system that resolves domain names to IP addresses. `/etc/hosts` is a local file on each machine that can override DNS for specific entries — useful for testing or internal environments. Changes to `/etc/hosts` only affect the local machine, while DNS changes propagate globally.
+DNS is a globally distributed system that resolves domain names to IP addresses across the internet. The /etc/hosts file is a local override on each individual machine — entries in it take precedence over DNS for that machine only. It is commonly used in development or testing environments to point a domain name to a local or staging server without modifying public DNS records.
 
-**What command did you use to create a new directory?**
+**What is the purpose of the shebang line in a Bash script?**
 
-`mkdir` — for example, `mkdir mylab` creates a directory named mylab in the current location.
+The shebang line at the top of a script tells the operating system which interpreter to use when the script is executed directly. Without it, the system may not know which shell to invoke and the script may not run as intended.
 
-**How can you view the contents of a file without opening it in a GUI?**
+**What does the free command show?**
 
-Using `cat filename` to print the full file, or `less filename` to scroll through it page by page.
-
-**What is the purpose of `chmod 777`?**
-
-It grants read, write, and execute permissions to the owner, group, and all other users. It was used to make the shell scripts executable. In production, this would be too permissive — `chmod 755` or `chmod +x` is preferred.
-
-**What does `#!/bin/bash` do at the start of a script?**
-
-It is the shebang line — it tells the operating system to use `/bin/bash` as the interpreter when the script is executed directly. Without it, the system may not know which shell to use.
-
-**What happens when invalid input is entered into a script?**
-
-The `else` branch handles unexpected input. In `system_info.sh`, any name that is not blank or "admin" triggers the default greeting, so the script handles all cases without crashing.
-
-**What output does `free -h` show?**
-
-It displays current memory usage in human-readable format — total, used, free, shared, buffer/cache, and available RAM. On this VM it showed 846Mi total with 419Mi used.
+It displays current memory usage in a human-readable format, including total RAM, amount in use, amount free, shared memory, buffer and cache usage, and the amount available for new processes. On this VM it showed 846Mi total RAM with 419Mi in use.
 
 **How would you monitor network bandwidth in a Bash script?**
 
-Using tools such as `ifstat`, `nload`, or reading from `/proc/net/dev` directly. For example: `cat /proc/net/dev` shows cumulative bytes transmitted and received per interface, which can be sampled at intervals to calculate bandwidth.
+By reading from the /proc/net/dev file, which contains cumulative bytes transmitted and received per network interface. Sampling this file at regular intervals and calculating the difference between readings gives a real-time bandwidth figure without requiring additional tools to be installed.
 
 ---
 
@@ -771,10 +608,10 @@ Using tools such as `ifstat`, `nload`, or reading from `/proc/net/dev` directly.
 
 | Issue | Resolution |
 |-------|------------|
-| SSH private key not saved at VM creation | Reset key via Azure portal → Reset password → Generate new key pair → Download `.pem` |
-| PowerShell did not recognise `ssh` command | Used Windows Command Prompt instead, which has native SSH support |
-| Paste disabled in CMD after SSH connection | Switched to Windows Terminal, which supports `Ctrl+Shift+V` paste consistently |
-| Commands merged into one line when pasting | Ran commands one at a time; used `tee` with heredoc for multi-line file creation |
+| SSH private key not saved at VM creation | Reset via Azure portal — generated and downloaded a new key pair |
+| PowerShell did not recognise the SSH command | Switched to Windows Command Prompt, which has native SSH support built in |
+| Paste disabled in CMD after SSH connection | Switched to Windows Terminal, which supports Ctrl+Shift+V paste consistently |
+| Commands merged into one line when pasting | Ran commands individually and used heredoc syntax for multi-line file creation |
 
 ---
 
@@ -783,13 +620,15 @@ Using tools such as `ifstat`, `nload`, or reading from `/proc/net/dev` directly.
 - Launched and configured an Ubuntu 24.04 VM on Microsoft Azure
 - Reset and downloaded an SSH private key via the Azure portal
 - Added an HTTP inbound rule to the Network Security Group to allow port 80
-- Installed Apache2 and served a live custom HTML page with hyperlinks
-- Transferred files using `wget`, `sudo cp`, and `scp`
-- Set correct file permissions using `chmod` and verified with `ls -la`
-- Tested network latency with `ping` across multiple regional targets
-- Created and executed three Bash scripts covering `echo`, `for`, `if/elif/else`, `read`, `free -h`, `df -h`, and `top`
+- Installed Apache2 and served a live custom HTML page with working hyperlinks
+- Transferred files using wget, sudo cp, and scp
+- Applied correct file permissions using chmod and verified the result with ls -la
+- Tested network latency with ping across multiple regional targets
+- Created and executed three Bash scripts covering echo, for loops, if/elif/else conditionals, interactive input, and system resource monitoring
 - Verified public server access from both desktop and mobile browsers
 
 ---
+
+[Back to Main README](../README.md)
 
 
