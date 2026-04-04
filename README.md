@@ -825,7 +825,7 @@ Write a Bash script to automate file backups with date-stamped filenames, make t
 
 A Documents directory and a backup directory were created under the azureuser home folder to simulate a working environment. Three test files were created inside Documents to serve as the content to be backed up. The ls command confirmed all three files were in place before the script was written.
 
-![Test files and directory structure created](lab-3a/01-test-files.png)
+![Test files and directory structure created](lab-3b/01-test-files.png)
 
 ---
 
@@ -835,7 +835,7 @@ A Bash script named `testscript` was written using a heredoc command to avoid pa
 
 The script was made executable using chmod 777, then run manually to verify all steps completed without error. The zip output confirmed all three files were archived, and the log entry appeared immediately with the correct timestamp and filename.
 
-![Backup script executed — zip output and log entry confirmed](lab-3a/02-script-run.png)
+![Backup script executed — zip output and log entry confirmed](lab-3b/02-script-run.png)
 
 ---
 
@@ -843,7 +843,7 @@ The script was made executable using chmod 777, then run manually to verify all 
 
 The script was moved to `/usr/bin/testscript` using sudo mv, making it accessible from any directory on the system without specifying a path. It was then run again simply by typing `testscript` from the home directory. The backup log showed a second entry with a new timestamp, confirming the script executed correctly as a system-wide command.
 
-![Script moved to /usr/bin and verified system-wide](lab-3a/03-chmod-move.png)
+![Script moved to /usr/bin and verified system-wide](lab-3b/03-chmod-move.png)
 
 ---
 
@@ -851,7 +851,7 @@ The script was moved to `/usr/bin/testscript` using sudo mv, making it accessibl
 
 The root crontab was opened using `sudo crontab -e`. A new cron entry was added at the bottom of the file using the standard five-field cron syntax, scheduling the script to run at the start of every hour. The crontab was saved and the system confirmed the new crontab was installed successfully.
 
-![Crontab configured with hourly backup job](lab-3a/04-crontab.png)
+![Crontab configured with hourly backup job](lab-3b/04-crontab.png)
 
 ---
 
@@ -859,9 +859,10 @@ The root crontab was opened using `sudo crontab -e`. A new cron entry was added 
 
 MariaDB was installed as an example of deploying an additional server service. The package manager resolved and installed all 37 required packages automatically. After installation, the MariaDB service was started and a root login was performed to verify the database was operational. The SHOW DATABASES command returned the four default system databases — `information_schema`, `mysql`, `performance_schema`, and `sys` — confirming a clean and functional installation.
 
-![MariaDB installation output](lab-3a/05-mariadb-install.png)
+![MariaDB installation output](lab-3b/05-mariadb-install.png)
 
-![MariaDB shell — SHOW DATABASES output](lab-3a/06-mariadb-verify.png)
+![MariaDB shell — SHOW DATABASES output](lab-3b/06-mariadb-verify.png)
+
 
 ---
 
