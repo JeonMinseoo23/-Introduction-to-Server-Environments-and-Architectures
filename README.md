@@ -13,7 +13,7 @@
 
 This repository documents my hands-on lab work for the BRG-27 Infrastructure Systems Engineering Activity module at Murdoch University. Each folder corresponds to a lab session covering a core area of Linux administration, cloud infrastructure, and server management.
 
-The labs progress from foundational Linux skills setting up the environment, navigating the file system, managing services and permissions through to real-world infrastructure topics such as cloud provisioning on AWS, DNS configuration, SSL certificates, and shell scripting automation.
+The labs progress from foundational Linux skills, setting up the environment, navigating the file system, managing services and permissions, through to real-world infrastructure topics such as cloud provisioning on AWS, DNS configuration, SSL certificates, and shell scripting automation.
 
 All Linux lab work was performed on Ubuntu 24.04.4 LTS running natively on Windows 11 via WSL 2. Cloud labs were performed on Amazon Web Services (AWS) using the free tier. Each lab folder contains a written walkthrough of the steps taken, commands used, observations made, and reflections on what was learned. Screenshots are included as evidence of hands-on completion.
 
@@ -42,7 +42,7 @@ This repository also serves as preparation for the final video demonstration, wh
 
 ## Objective
 
-Get hands-on with core Linux administration — from basic command line navigation through to managing services, users, firewalls, SSH, and file compression. The loopback address `127.0.0.1` was used to simulate a partner machine, which is common industry practice for testing network configurations locally before going live.
+Get hands-on with core Linux administration from basic command line navigation through to managing services, users, firewalls, SSH, and file compression. The loopback address `127.0.0.1` was used to simulate a partner machine, which is common industry practice for testing network configurations locally before going live.
 
 ---
 
@@ -71,7 +71,7 @@ Get hands-on with core Linux administration — from basic command line navigati
 
 ## Part 1 — Basic Command Line Navigation
 
-Practised moving around the Linux file system using `pwd`, `ls`, and `cd`. `pwd` confirmed the home directory at `/home/user`. `ls /etc` revealed the full collection of system configuration files. `cd ~` returned to home from any location.
+Practiced moving around the Linux file system using `pwd`, `ls`, and `cd`. `pwd` confirmed the home directory at `/home/user`. `ls /etc` revealed the full collection of system configuration files. `cd ~` returned to home from any location.
 
 ![Navigation commands](lab-1b/01-navigation.png)
 
@@ -101,7 +101,7 @@ Explored the three key system directories:
 
 ## Part 4 — Manual Pages
 
-Used `man ls` to explore the built-in documentation for the `ls` command. The man page shows every available flag and option without needing internet access.
+Used `man ls` to explore the built-in documentation for the `ls` command. The man page lists all available flags and options without requiring internet access.
 
 ![man ls](lab-1b/04-man-ls.png)
 
@@ -109,7 +109,7 @@ Used `man ls` to explore the built-in documentation for the `ls` command. The ma
 
 ## Part 5 — CLI File Operations & System Info
 
-Practised creating, copying, and viewing files. Checked system information using `uname -a`, `hostnamectl`, and `ps -e`. The process list confirmed services like `sshd`, `apache2`, and `systemd` were running.
+Practiced creating, copying, and viewing files. Checked system information using `uname -a`, `hostnamectl`, and `ps -e`. The process list confirmed that services such as `sshd`, `apache2`, and `systemd` were running.
 
 ![File ops and system info](lab-1b/05-file-ops-sysinfo.png)
 
@@ -117,7 +117,7 @@ Practised creating, copying, and viewing files. Checked system information using
 
 ## Part 6 — Super User & Permissions
 
-Demonstrated privilege escalation with `whoami` and `sudo whoami`. Attempted `adduser` without sudo it failed. With sudo it succeeded.
+Demonstrated privilege escalation with `whoami` and `sudo whoami`. Attempted `adduser` without sudo, it failed. With sudo, it succeeded.
 
 ![sudo whoami](lab-1b/06-sudo-whoami.png)
 
@@ -137,7 +137,7 @@ Installed Apache using `sudo apt install apache2` and visited `http://127.0.0.1`
 
 ## Part 8 — Edit index.html and Share with Partner
 
-Edited `/var/www/html/index.html` using nano to replace the default Apache page with a custom page "Peer Page, Modified by Audrey Teo". Verified the content with `cat` then visited `http://127.0.0.1` in the browser to confirm the change was live.
+Edited `/var/www/html/index.html` using nano to replace the default Apache page with a custom page, "Peer Page, Modified by Audrey Teo". Verified the content with `cat`, then visited `http://127.0.0.1` in the browser to confirm the change was live.
 
 ![Editing index.html in nano](lab-1b/09-edit-indexhtml.png)
 
@@ -149,7 +149,7 @@ Edited `/var/www/html/index.html` using nano to replace the default Apache page 
 
 ## Part 9 — Scan Ports with Nmap and Remove Apache
 
-Ran `nmap 127.0.0.1` to scan open ports — both port 22 (SSH) and port 80 (HTTP) showed as open with Apache running. Removed Apache and reran Nmap port 80 disappeared, confirming that removing a service directly closes its port.
+Ran `nmap 127.0.0.1` to scan open ports — both port 22 (SSH) and port 80 (HTTP) showed as open with Apache running. Removed Apache and reran Nmap, port 80 disappeared, confirming that removing a service directly closes its port.
 
 ![Nmap scan with Apache running](lab-1b/07-nmap.png)
 
@@ -159,7 +159,7 @@ Ran `nmap 127.0.0.1` to scan open ports — both port 22 (SSH) and port 80 (HTTP
 
 ## Part 10 — Enable UFW and Observe Service Access
 
-Enabled UFW and allowed port 80. Observed that blocking port 80 via UFW prevented web access even with Apache running showing the firewall and the service are independent security layers.
+Enabled UFW and allowed port 80. Observed that blocking port 80 via UFW prevented web access, even with Apache running, showing that the firewall and the service are independent security layers.
 
 ```bash
 sudo ufw enable
@@ -196,7 +196,7 @@ Created a new user `audrey_test` using `sudo adduser` and SSH'd into the machine
 
 ## Part 13 — Download Books Using wget
 
-Downloaded books from Project Gutenberg using `wget` to practise retrieving files from the internet via the command line.
+Downloaded books from Project Gutenberg using `wget` to practice retrieving files from the internet via the command line.
 
 ```bash
 wget https://www.gutenberg.org/cache/epub/11/pg11.txt
@@ -220,7 +220,7 @@ tar -cvf books.tar books
 
 ---
 
-## Part 15 — Compress, Decompress and Extract
+## Part 15 — Compress, Decompress, and Extract
 
 Compressed the tar archive using `bzip2`, then decompressed and extracted it to verify the contents were intact.
 
@@ -239,13 +239,13 @@ tar -xvf books.tar
 
 ### Challenge 1 — Remote File Creation via SSH
 
-SSH'd into `audrey_test` and created `remote_task.txt` remotely, confirming SSH gives full shell access to the remote machine.
+SSH'd into `audrey_test` and created `remote_task.txt` remotely, confirming that SSH provides a full shell on the remote machine.
 
 ![Remote file creation](lab-1b/touchremotetask.png)
 
 ### Challenge 2 — Remote GUI Apps via SSH
 
-Attempted to launch `gedit` over SSH it failed because `gedit` requires a display server. SSH provides terminal access only.
+Attempted to launch `gedit` over SSH, but it failed because `gedit` requires a display server. SSH provides terminal access only.
 
 ### Challenge 3 & 4 — SCP File Transfer
 
@@ -273,19 +273,19 @@ scp -r books/ audrey_test@127.0.0.1:~/
 
 ## Outcome
 
-- Navigated the Linux file system using `pwd`, `ls`, `cd`, `mkdir`, and `touch`
-- Installed and tested Apache web server, edited `index.html` using nano
-- Scanned open ports using Nmap before and after removing Apache confirmed port 80 disappeared
+- Navigated the Linux file system using `pwd`, `ls`, `cd`, `mkdir`, and `touch.`
+- Installed and tested the Apache web server, edited `index.html` using nano
+- Scanned open ports using Nmap before and after removing Apache, and confirmed that port 80 disappeared
 - Configured UFW firewall rules and observed independent control over service accessibility
 - Created a new user and SSH'd between accounts using the loopback address
-- Downloaded files with `wget`, compressed with `tar` and `bzip2`, transferred with `scp`
+- Downloaded files with `wget`, compressed with `tar` and `bzip2`, transferred with `scp.`
 - Demonstrated privilege escalation with `sudo` and discussed the principle of least privilege
 
 ---
 
 ## Reflection
 
-Using `127.0.0.1` as a loopback to simulate a partner was a practical way to test SSH and SCP without needing a second machine. The Nmap exercise clearly showed that removing a service closes its port a running service and a firewall rule are two independent controls. The gedit failure over SSH was a good reminder that servers are headless by default and all administration must be done through the terminal.
+Using `127.0.0.1` as a loopback to simulate a partner was a practical way to test SSH and SCP without needing a second machine. The Nmap exercise clearly showed that removing a service closes its port; a running service and a firewall rule are two independent controls. The gedit failure over SSH was a good reminder that servers are headless by default and all administration must be done through the terminal.
 
 ---
 
@@ -356,7 +356,7 @@ The table below summarises the calculation method for each cost component side b
 | HP LaserJet Pro M404n | SGD $9,217.00 |
 | **Canon saves** | **SGD $5,638.70** |
 
-The Canon PIXMA G3020 is significantly cheaper over five years. Its ink tank system costs a fraction of laser toner, and its 11W active power draw versus 380W for the HP means electricity costs are negligible by comparison. Even with contingency replacement units budgeted for both printers, Canon remains the more cost-effective choice. The HP M404n offers faster speeds (38 ppm vs 9 ipm) and suits mono-only, high-speed office environments where print speed and network reliability outweigh running costs.
+The Canon PIXMA G3020 is significantly cheaper over five years. Its ink tank system costs a fraction of laser toner, and its 11W active power draw versus 380W for the HP means electricity costs are negligible. Even with contingency replacement units budgeted for both printers, Canon remains the more cost-effective choice. The HP M404n offers faster speeds (38 ppm vs 9 ipm) and suits mono-only, high-speed office environments where print speed and network reliability outweigh running costs.
 
 ---
 
@@ -387,7 +387,7 @@ The Canon PIXMA G3020 is significantly cheaper over five years. Its ink tank sys
 
 ## Objective
 
-Launch and configure a cloud virtual machine on Microsoft Azure, install and serve content using Apache2, and demonstrate file management, network access, and remote connectivity. The lab was then extended with Bash scripting writing and executing shell scripts for system information, loops, conditionals, and automated resource monitoring.
+Launch and configure a cloud virtual machine on Microsoft Azure, install and serve content using Apache2, and demonstrate file management, network access, and remote connectivity. The lab was then extended with Bash scripting, writing and executing shell scripts for system information, loops, conditionals, and automated resource monitoring.
 
 ---
 
@@ -423,7 +423,7 @@ Launch and configure a cloud virtual machine on Microsoft Azure, install and ser
 
 ## Part 1 — SSH into the Azure VM
 
-The Azure VM was accessed from Windows Command Prompt using a private key downloaded from the Azure portal. The original key had not been saved at the time the VM was created, so it was reset through the Azure portal's Reset Password interface, which generated a new key pair and allowed the private key to be downloaded. The SSH command was then run specifying the key file path and the VM's public IP address. The terminal prompt changed to `azureuser@my-vm`, confirming a successful remote connection.
+The Azure VM was accessed from Windows Command Prompt using a private key downloaded from the Azure portal. The original key had not been saved when the VM was created, so it was reset via the Azure portal's Reset Password interface, which generated a new key pair and allowed the private key to be downloaded. The SSH command was then run, specifying the key file path and the VM's public IP address. The terminal prompt changed to `azureuser@my-vm`, confirming a successful remote connection.
 
 ![SSH connected to Azure VM](lab-2a/01-ssh-connected.png)
 
@@ -439,7 +439,7 @@ Before installing any software, the package index was updated to ensure all subs
 
 ## Part 3 — Install Apache2
 
-Apache2 was installed using the package manager. All dependencies were resolved and installed automatically, and the web server service was started immediately upon installation completion.
+Apache2 was installed using the package manager. All dependencies were automatically resolved and installed, and the web server service was started immediately upon installation completion.
 
 ![Apache2 installation](lab-2a/03-apache-install.png)
 
@@ -460,7 +460,7 @@ By default, only port 22 (SSH) was permitted in the Azure Network Security Group
 
 ## Part 5 — Verify Apache in Browser
 
-The VM's public IP address was entered into a browser to confirm Apache2 was running and serving content. The default Ubuntu Apache2 welcome page loaded successfully, confirming the web server was live and the port 80 rule was working correctly.
+The VM's public IP address was entered into a browser to confirm Apache2 was running and serving content. The default Ubuntu Apache2 welcome page loaded successfully, confirming the web server was live, and the port 80 rule was working correctly.
 
 ![Apache2 default page in browser](lab-2a/05-apache-browser.png)
 
@@ -484,7 +484,7 @@ The entire default Apache page was replaced with a clean custom HTML page. The n
 
 ## Part 8 — Download and Copy Files Using wget and sudo cp
 
-A remote image file was downloaded to the VM using wget, then copied into the Apache web directory using sudo cp. This demonstrated how files can be retrieved from the internet directly on the server and placed into a publicly served directory without any local machine involvement.
+A remote image file was downloaded to the VM using wget, then copied into the Apache web directory using sudo cp. This demonstrated how files can be retrieved from the internet directly on the server and placed in a publicly served directory without any involvement from the local machine.
 
 ![wget download and sudo cp output](lab-2a/09-wget-copy.png)
 
@@ -500,7 +500,7 @@ The web server was accessed from a mobile phone browser using the same public IP
 
 ## Part 10 — Network Latency Testing with ping
 
-The ping command was used to measure network latency from the VM to servers in three different geographic regions. All responses returned under 4ms, which reflects Google's globally distributed infrastructure requests are automatically routed to the nearest available node regardless of the domain suffix used.
+The ping command was used to measure network latency from the VM to servers in three different geographic regions. All responses returned under 4ms, which reflects that Google's globally distributed infrastructure automatically routes requests to the nearest available node regardless of the domain suffix used.
 
 | Target | Average Latency |
 |--------|----------------|
@@ -514,7 +514,7 @@ The ping command was used to measure network latency from the VM to servers in t
 
 ## Part 11 — File Transfer Using SCP
 
-A file was securely transferred from the local Windows machine to the Azure VM using SCP with the private key for authentication. This demonstrated an alternative method of getting files onto a remote server pushing directly from the local machine rather than pulling from a remote URL.
+A file was securely transferred from the local Windows machine to the Azure VM using SCP with the private key for authentication. This demonstrated an alternative method for uploading files to a remote server: pushing directly from the local machine rather than pulling from a remote URL.
 
 ![SCP file transfer output](lab-2a/12-scp-transfer.png)
 
@@ -522,7 +522,7 @@ A file was securely transferred from the local Windows machine to the Azure VM u
 
 ## Part 12 — Set File Permissions Using chmod
 
-Restrictive permissions were applied to the private key file using chmod 600, ensuring only the file owner can read or write it. The result was confirmed using ls -la, which returned `-rw-------` the standard required permission level for SSH private keys. If a key file has broader permissions, SSH will refuse to use it as a security measure.
+Restrictive permissions were applied to the private key file using chmod 600, ensuring only the file owner can read or write it. The result was confirmed using ls -la, which returned `-rw-------`, the standard required permission level for SSH private keys. If a key file has broader permissions, SSH will refuse to use it as a security measure.
 
 ![chmod 600 and ls -la output](lab-2a/13-chmod.png)
 
@@ -532,13 +532,13 @@ Restrictive permissions were applied to the private key file using chmod 600, en
 
 ### Directory Creation and Navigation
 
-A working directory structure was created for the Bash scripting exercises. A main lab directory was created, then two subdirectories one for scripts and one for documentation were created inside it. The ls command was used to confirm the structure was in place.
+A working directory structure was created for the Bash scripting exercises. A main lab directory was created, then two subdirectories, one for scripts and one for documentation, were created inside it. The ls command was used to confirm the structure was in place.
 
 ![mkdir and directory navigation](lab-2a/14-mkdir-navigate.png)
 
 ### File Operations
 
-Core file management commands were practised by creating a new file, copying it under a different name, and renaming the copy using the move command. Listing the directory contents afterwards confirmed all three operations completed successfully.
+Core file management commands were practiced by creating a new file, copying it under a different name, and renaming the copy using the move command. Listing the directory contents afterward confirmed all three operations completed successfully.
 
 ![File operations — touch, cp, mv, ls](lab-2a/14b-file-commands.png)
 
@@ -554,7 +554,7 @@ A basic shell script was written and saved using nano. It opened with the sheban
 
 ## Part 15 — Bash Script: system_info.sh
 
-A more structured script was written, incorporating a for loop to produce a countdown from three to one, the read command to accept interactive input from the user, and an if/elif/else conditional block to evaluate what was typed and return an appropriate response. When run with the name "Audrey", the script completed the countdown and returned a personalized greeting confirming that the loop and conditional logic both functioned as expected.
+A more structured script was written, incorporating a for loop to produce a countdown from 3 to 1, the read command to accept user input, and an if/elif/else conditional block to evaluate the input and return an appropriate response. When run with the name "Audrey", the script completed the countdown and returned a personalized greeting confirming that the loop and conditional logic both functioned as expected.
 
 ![system_info.sh execution output](lab-2a/16-system-info-run.png)
 
@@ -562,7 +562,7 @@ A more structured script was written, incorporating a for loop to produce a coun
 
 ## Part 16 — Bash Script: resource_monitor.sh
 
-A resource monitoring script was written that first asks the user how many monitoring cycles to run, then loops through each cycle, displaying memory usage, disk usage, and CPU load at each iteration with a two-second pause between checks. Running the script with two iterations showed memory at 419Mi used of 846Mi total, disk at 8% used, and CPU idle above 88%, confirming the server was running well within its resource limits.
+A resource-monitoring script was written that first asks the user how many monitoring cycles to run, then loops through each cycle, displaying memory usage, disk usage, and CPU load at each iteration, with a 2-second pause between checks. Running the script with two iterations showed memory at 419Mi used of 846Mi total, disk at 8% used, and CPU idle above 88%, confirming the server was running well within its resource limits.
 
 ![resource_monitor.sh execution output](lab-2a/17-resource-monitor-run.png)
 
@@ -570,9 +570,9 @@ A resource monitoring script was written that first asks the user how many monit
 
 ## Reflection Questions
 
-**What were the benefits of cloud deployment over local virtualisation?**
+**What were the benefits of cloud deployment over local virtualization?**
 
-Cloud deployment removes the need for dedicated local hardware. The VM was provisioned within minutes, accessible from any device with a network connection, and could be stopped when idle to avoid unnecessary charges. Local virtualisation requires a capable host machine and is not remotely accessible without additional configuration.
+Cloud deployment removes the need for dedicated local hardware. The VM was provisioned within minutes, accessible from any device with a network connection, and could be stopped when idle to avoid unnecessary charges. Local virtualization requires a capable host machine and is not remotely accessible without additional configuration.
 
 **How does Apache serve files, and how did you verify this?**
 
@@ -588,7 +588,7 @@ A running VM continues to accumulate compute charges even when no work is being 
 
 **How would you explain the difference between DNS and /etc/hosts to a client?**
 
-DNS is a globally distributed system that resolves domain names to IP addresses across the internet. The /etc/hosts file is a local override; its entries take precedence over DNS on that machine only. It is commonly used in development or testing environments to point a domain name to a local or staging server without modifying public DNS records.
+DNS is a globally distributed system that resolves domain names to IP addresses across the Internet. The /etc/hosts file is a local override; its entries take precedence over DNS on that machine only. It is commonly used in development or testing environments to point a domain name to a local or staging server without modifying public DNS records.
 
 **What is the purpose of the shebang line in a Bash script?**
 
@@ -596,7 +596,7 @@ The shebang line at the top of a script tells the operating system which interpr
 
 **What does the free command show?**
 
-It displays current memory usage in a human-readable format, including total RAM, amount in use, amount free, shared memory, buffer, and cache usage, and the amount available for new processes. On this VM, it showed 846Mi total RAM with 419Mi in use.
+It displays current memory usage in a human-readable format, including total RAM, amount in use, amount free, shared memory, buffer, and cache usage, and the amount available for new processes. On this VM, it showed 846 Mi total RAM, with 419 Mi in use.
 
 **How would you monitor network bandwidth in a Bash script?**
 
@@ -608,7 +608,7 @@ By reading from the /proc/net/dev file, which contains cumulative bytes transmit
 
 | Issue | Resolution |
 |-------|------------|
-| SSH private key not saved at VM creation | Reset via Azure portal generated and downloaded a new key pair |
+| SSH private key not saved at VM creation | Reset via Azure portal, generated and downloaded a new key pair |
 | PowerShell did not recognize the SSH command | Switched to Windows Command Prompt, which has native SSH support built in |
 | Paste disabled in CMD after SSH connection | Switched to Windows Terminal, which supports Ctrl+Shift+V paste consistently |
 | Commands merged into one line when pasting | Ran commands individually and used heredoc syntax for multi-line file creation |
