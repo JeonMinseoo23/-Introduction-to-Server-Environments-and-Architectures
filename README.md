@@ -74,7 +74,7 @@ Get hands-on with core Linux administration — from basic command line navigati
 
 Practised moving around the Linux file system using `pwd`, `ls`, and `cd`. `pwd` confirmed the home directory at `/home/user`. `ls /etc` revealed the full collection of system configuration files. `cd ~` returned to home from any location.
 
-![Navigation commands](01-navigation.png)
+![Navigation commands](lab-1b/01-navigation.png)
 
 ---
 
@@ -82,7 +82,7 @@ Practised moving around the Linux file system using `pwd`, `ls`, and `cd`. `pwd`
 
 Used `mkdir` and `touch` to create a working directory and files inside it. `ls -l` confirmed both files were created with `-rw-r--r--` permissions.
 
-![mkdir and touch](02-mkdir-touch.png)
+![mkdir and touch](lab-1b/02-mkdir-touch.png)
 
 ---
 
@@ -96,7 +96,7 @@ Explored the three key system directories:
 | `/var` | Variable runtime data — logs, mail, spool, crash reports |
 | `/home` | User home directories — personal files and settings per user |
 
-![Directory structure](03-directory-structure.png)
+![Directory structure](lab-1b/03-directory-structure.png)
 
 ---
 
@@ -104,7 +104,7 @@ Explored the three key system directories:
 
 Used `man ls` to explore the built-in documentation for the `ls` command. The man page shows every available flag and option without needing internet access.
 
-![man ls](04-man-ls.png)
+![man ls](lab-1b/04-man-ls.png)
 
 ---
 
@@ -112,7 +112,7 @@ Used `man ls` to explore the built-in documentation for the `ls` command. The ma
 
 Practised creating, copying, and viewing files. Checked system information using `uname -a`, `hostnamectl`, and `ps -e`. The process list confirmed services like `sshd`, `apache2`, and `systemd` were running.
 
-![File ops and system info](05-file-ops-sysinfo.png)
+![File ops and system info](lab-1b/05-file-ops-sysinfo.png)
 
 ---
 
@@ -120,7 +120,7 @@ Practised creating, copying, and viewing files. Checked system information using
 
 Demonstrated privilege escalation with `whoami` and `sudo whoami`. Attempted `adduser` without sudo — it failed. With sudo it succeeded (user `audrey_test` was already created in an earlier session).
 
-![sudo whoami](06-sudo-whoami.png)
+![sudo whoami](lab-1b/06-sudo-whoami.png)
 
 ---
 
@@ -133,11 +133,11 @@ sudo apt install openssh-server
 ssh audrey_test@127.0.0.1
 ```
 
-![Install SSH](install SSH 1.png)
+![Install-SSH](lab-1b/install%20SSH%201.png)
 
-![Install SSH 2](install SSH 2.png)
+![Install-SSH-2](lab-1b/install%20SSH%202.png)
 
-![SSH login](SH login.png)
+![SSH-login](lab-1b/SH%20login.png)
 
 ---
 
@@ -150,13 +150,13 @@ sudo apt install apache2
 nmap 127.0.0.1
 ```
 
-![Install Apache](install apache2.png)
+![Install-Apache](lab-1b/install%20apache2.png)
 
-![Install Apache 2](install apache2 2.png)
+![Install-Apache-2](lab-1b/install%20apache2%202.png)
 
-![ip a](ip a.png)
+![ip-a](lab-1b/ip%20a.png)
 
-![Nmap scan](07-nmap.png)
+![Nmap scan](lab-1b/07-nmap.png)
 
 ---
 
@@ -170,7 +170,7 @@ sudo ufw allow 80
 sudo ufw status
 ```
 
-![UFW status](08-ufw-status.png)
+![UFW status](lab-1b/08-ufw-status.png)
 
 ---
 
@@ -178,7 +178,7 @@ sudo ufw status
 
 Downloaded books from Project Gutenberg using `wget`, organised them into a directory, and compressed using `tar` and `bzip2`. `bzip2` was not installed by default — installed it with `apt` before proceeding.
 
-![wget and bzip2 compression](wget%20bzip2.png)
+![wget and bzip2 compression](lab-1b/wget%20bzip2.png)
 
 ---
 
@@ -188,7 +188,7 @@ Downloaded books from Project Gutenberg using `wget`, organised them into a dire
 
 SSH'd into `audrey_test` and created `remote_task.txt` remotely. Then attempted to launch `gedit` over SSH — it failed because `gedit` is a GUI application and requires a display server. SSH provides terminal access only.
 
-![Remote file creation and gedit fail](touchremotetask.png)
+![Remote file creation and gedit fail](lab-1b/touchremotetask.png)
 
 ### Challenge 3 & 4 — SCP File Transfer
 
@@ -199,7 +199,7 @@ tar -cvjf final_archive.tar.bz2 pg*.txt
 scp final_archive.tar.bz2 audrey_test@127.0.0.1:~/
 ```
 
-![SCP transfer](SCP transfer.png)
+![SCP-transfer](lab-1b/SCP%20transfer.png)
 
 ---
 
