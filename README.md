@@ -32,7 +32,6 @@ This repository also serves as preparation for the final video demonstration, wh
 | Architecture | x86_64 |
 
 ---
-
 # Lab 1b — Familiarity with Ubuntu Linux
 
 **Module:** BRG-27 ISEA  
@@ -124,21 +123,7 @@ Demonstrated privilege escalation with `whoami` and `sudo whoami`. Attempted `ad
 
 ---
 
-## Part 7 — SSH & User Management
-
-Installed OpenSSH server and created user `audrey_test` to simulate a partner. SSH'd into the local machine via the loopback address.
-
-![Install SSH](lab-1b/install%20SSH%201.png)
-
-![Install SSH 2](lab-1b/install%20SSH%202.png)
-
-![SSH login](lab-1b/SH%20login.png)
-
----
-
-## Part 8 — Apache Web Server, index.html & Nmap
-
-**Step 1 — Install Apache and test web access**
+## Part 7 — Install Apache and Test Web Access
 
 Installed Apache using `sudo apt install apache2` and visited `http://127.0.0.1` in the browser to confirm the default page was live. Used `ip a` to determine the machine's IP address.
 
@@ -148,7 +133,9 @@ Installed Apache using `sudo apt install apache2` and visited `http://127.0.0.1`
 
 ![ip a](lab-1b/ip%20a.png)
 
-**Step 2 — Edit index.html and share with partner**
+---
+
+## Part 8 — Edit index.html and Share with Partner
 
 Edited `/var/www/html/index.html` using nano to replace the default Apache page with a custom page — "Peer Page, Modified by Audrey Teo". Verified the content with `cat` then visited `http://127.0.0.1` in the browser to confirm the change was live.
 
@@ -158,31 +145,91 @@ Edited `/var/www/html/index.html` using nano to replace the default Apache page 
 
 ![Peer page in browser](lab-1b/Peer%20page.png)
 
-**Step 3 — Scan ports with Nmap and observe open services**
+---
 
-Ran `nmap 127.0.0.1` to scan the machine. Both port 22 (SSH) and port 80 (HTTP) showed as open, confirming Apache and SSH were running and accessible.
+## Part 9 — Scan Ports with Nmap and Remove Apache
+
+Ran `nmap 127.0.0.1` to scan open ports — both port 22 (SSH) and port 80 (HTTP) showed as open with Apache running. Removed Apache and reran Nmap — port 80 disappeared, confirming that removing a service directly closes its port.
 
 ![Nmap scan with Apache running](lab-1b/07-nmap.png)
-
-**Step 4 — Remove Apache and rerun Nmap to observe differences**
-
-Stopped and removed Apache using `sudo apt remove apache2 -y`, then reran Nmap. Port 80 disappeared from the results — only port 22 remained. This confirms that removing a service directly closes its port and removes it from the network surface.
 
 ![Remove Apache and rerun Nmap](lab-1b/11-remove-apache-nmap.png)
 
 ---
 
-## Part 9 — UFW Firewall
+## Part 10 — Enable UFW and Observe Service Access
 
-Enabled UFW and allowed port 80. Status confirmed the rule was active for both IPv4 and IPv6. Blocking port 80 via UFW prevented web access even with Apache running — showing the firewall and the service are independent security layers.
+Enabled UFW and allowed port 80. Observed that blocking port 80 via UFW prevented web access even with Apache running — showing the firewall and the service are independent security layers.
+
+```bash
+sudo ufw enable
+sudo ufw allow 80
+sudo ufw status
+```
 
 ![UFW status](lab-1b/08-ufw-status.png)
 
 ---
 
-## Part 10 — File Compression with tar & bzip2
+## Part 11 — Attempt SSH and Troubleshoot with UFW Rules
 
-Downloaded books from Project Gutenberg using `wget`, organised them, and compressed using `tar` and `bzip2`. `bzip2` was not installed by default and was installed via `apt`.
+Attempted SSH into the partner machine using the loopback address. Troubleshot connectivity issues by checking UFW rules and ensuring OpenSSH was allowed through the firewall.
+
+```bash
+sudo ufw allow OpenSSH
+ssh audrey_test@127.0.0.1
+```
+
+![SSH login](lab-1b/SH%20login.png)
+
+---
+
+## Part 12 — Create a New User and SSH
+
+Created a new user `audrey_test` using `sudo adduser` and SSH'd into the machine using that account to simulate connecting to a partner machine.
+
+![Install SSH](lab-1b/install%20SSH%201.png)
+
+![Install SSH 2](lab-1b/install%20SSH%202.png)
+
+---
+
+## Part 13 — Download Books Using wget
+
+Downloaded books from Project Gutenberg using `wget` to practise retrieving files from the internet via the command line.
+
+```bash
+wget https://www.gutenberg.org/cache/epub/11/pg11.txt
+```
+
+![wget download](lab-1b/13-wget.png)
+
+---
+
+## Part 14 — Create Directory, Move Files, Create tar Archive
+
+Created a `books/` directory, moved downloaded files into it, and created a tar archive.
+
+```bash
+mkdir books
+mv pg11.txt books/
+tar -cvf books.tar books
+```
+
+![mkdir and tar](lab-1b/14-mkdir-tar.png)
+
+---
+
+## Part 15 — Compress, Decompress and Extract
+
+Compressed the tar archive using `bzip2`, then decompressed and extracted it to verify the contents were intact.
+
+```bash
+bzip2 books.tar
+ls -lh books.tar.bz2
+bunzip2 books.tar.bz2
+tar -xvf books.tar
+```
 
 ![wget and bzip2 compression](lab-1b/wget%20bzip2.png)
 
@@ -192,7 +239,7 @@ Downloaded books from Project Gutenberg using `wget`, organised them, and compre
 
 ### Challenge 1 — Remote File Creation via SSH
 
-SSH'd into `audrey_test` and created `remote_task.txt` remotely, confirming SSH gives full shell access.
+SSH'd into `audrey_test` and created `remote_task.txt` remotely, confirming SSH gives full shell access to the remote machine.
 
 ![Remote file creation](lab-1b/touchremotetask.png)
 
@@ -200,15 +247,18 @@ SSH'd into `audrey_test` and created `remote_task.txt` remotely, confirming SSH 
 
 Attempted to launch `gedit` over SSH — it failed because `gedit` requires a display server. SSH provides terminal access only.
 
-![gedit fail and SCP](lab-1b/12-gedit-scp.png)
-
 ### Challenge 3 & 4 — SCP File Transfer
 
-Used SCP to transfer a file and recursively copy the entire `books/` directory to the partner machine. Transfer completed successfully.
+Used SCP to transfer a single file and recursively copy the entire `books/` directory to the partner machine.
 
-![SCP transfer](lab-1b/SCP%20transfer.png)
+```bash
+scp hello.txt audrey_test@127.0.0.1:~/
+scp -r books/ audrey_test@127.0.0.1:~/
+```
 
-![gedit fail and SCP recursive](lab-1b/12-gedit-scp.png)
+![gedit fail and SCP](lab-1b/12-gedit-scp.png)
+
+![SCP archive transfer](lab-1b/SCP%20transfer.png)
 
 ---
 
@@ -224,12 +274,10 @@ Used SCP to transfer a file and recursively copy the entire `books/` directory t
 ## Outcome
 
 - Navigated the Linux file system using `pwd`, `ls`, `cd`, `mkdir`, and `touch`
-- Explored `/etc`, `/var`, and `/home` and understood what each directory is used for
-- Used `man` pages as a built-in reference for command documentation
-- Installed and configured Apache, SSH server, and UFW firewall
-- Edited `index.html` using nano and verified changes with `cat`
+- Installed and tested Apache web server, edited `index.html` using nano
+- Scanned open ports using Nmap before and after removing Apache — confirmed port 80 disappeared
+- Configured UFW firewall rules and observed independent control over service accessibility
 - Created a new user and SSH'd between accounts using the loopback address
-- Scanned ports with Nmap before and after removing Apache — confirmed port 80 disappeared
 - Downloaded files with `wget`, compressed with `tar` and `bzip2`, transferred with `scp`
 - Demonstrated privilege escalation with `sudo` and discussed the principle of least privilege
 
@@ -237,7 +285,7 @@ Used SCP to transfer a file and recursively copy the entire `books/` directory t
 
 ## Reflection
 
-Using `127.0.0.1` as a loopback to simulate a partner was a practical way to test SSH and SCP without needing a second machine. In real infrastructure the same commands apply — just replace the loopback with the actual server IP. The UFW exercise highlighted that a running service and a firewall rule are independent controls — a service can be live but completely unreachable if the firewall blocks its port. The gedit failure over SSH was a good reminder that servers are headless by default and everything must be managed through the terminal.
+Using `127.0.0.1` as a loopback to simulate a partner was a practical way to test SSH and SCP without needing a second machine. The Nmap exercise clearly showed that removing a service closes its port — a running service and a firewall rule are two independent controls. The gedit failure over SSH was a good reminder that servers are headless by default and all administration must be done through the terminal.
 
 ---
 
