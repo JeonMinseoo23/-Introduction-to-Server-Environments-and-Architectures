@@ -1034,4 +1034,3 @@ A default MariaDB installation includes anonymous user accounts and a test datab
 
 ---
 
-[Back to Main README](../README.md)
