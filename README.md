@@ -305,23 +305,15 @@ Used SCP to transfer a single file and recursively copy the entire `books/` dire
 
 ---
 
-## Reflection Questions
+## Day 1 Reflection
 
-**Why simulate multiple users and groups in a lab environment?**
+Day 1 was about learning to navigate and control a Linux system from first principles. Starting with the command line felt unfamiliar at first — there is no GUI to fall back on, and every action requires knowing the exact command and its syntax. Working through `pwd`, `ls`, `cd`, `mkdir`, and `touch` made it clear that the terminal is not just an alternative to a GUI but a more precise and scriptable way to interact with a system. Understanding the directory structure — why `/etc` holds configuration, `/var` holds runtime data, and `/home` holds user files — made the system feel less like a black box and more like something with a logical design.
 
-Simulating multiple users allows the effects of permission controls to be observed directly. Without a second account, it is impossible to verify whether a file set to `700` is actually inaccessible to other users, or whether an ACL entry grants the intended access. Real server environments always involve multiple accounts — service accounts, admin accounts, and application users — making multi-user testing essential.
+Installing Apache and testing it over the loopback address brought together several concepts at once. The web server had to be installed, the firewall had to allow port 80, and the browser had to be pointed at the right IP — if any one of those steps was wrong, nothing worked. That dependency chain was an early lesson in how services, network rules, and DNS must be aligned for a user to reach a page. Running Nmap before and after removing Apache showed that a service and a firewall rule are two separate controls: removing the service closed the port even without touching the firewall, which reinforced that the firewall is not the only line of defense.
 
-**Why use ACLs over basic chmod?**
+Managing users and applying permissions made the security model concrete. Using `sudo` only when necessary, creating `audrey_test` as a separate account, and SSHing into it locally demonstrated why privilege separation matters — running everything as root means a single mistake can compromise the entire system. The permissions work extended this further: `chmod 700` restricted a file to the owner only, `chmod 644` allowed others to read it but not modify it, and ACLs allowed a specific named user to be granted access without changing the file's owner or group. This layered approach — where standard permissions set the baseline and ACLs provide exceptions — is how real multi-user environments manage shared resources without opening everything up. Setting a file to `777` may seem convenient for testing, but it removes all control at once and creates habits that lead to incidents in production.
 
-The standard Unix permission model allows only three permission classes: owner, group, and others. In environments where a file must be accessible to a specific named user who is not the owner and not in the owner's group, chmod alone cannot express this without granting broader access to the entire others class. ACLs allow named users and groups to be assigned specific permissions independently of the file owner, enabling fine-grained access control without compromising security.
-
-**Why avoid chmod 777 even in testing?**
-
-Setting a file or directory to `777` grants read, write, and execute permissions to every user on the system, including service accounts and other processes. In a testing environment this may seem harmless, but it establishes habits that are dangerous in production. Scripts with `777` permissions can be modified by any process on the system, making them a vector for privilege escalation if exploited. The correct approach is to apply only the permissions actually required and to validate them using `ls -la` and `getfacl`.
-
-**Why search by access time rather than modify time in security contexts?**
-
-Modification time (`-mtime`) records when a file's contents were last changed. Access time (`-atime`) records when the file was last read. In a security investigation, a file that has been read without being modified — for example, a configuration file or private key accessed by an unauthorised process — would not appear in a `-mtime` search but would appear in an `-atime` search. Using `-atime` provides visibility into read access that `-mtime` alone would miss.
+Searching the file system with `find` tied the day together by showing how to audit what is actually on a system. Finding backup archives by name, filtering by modification time, and identifying large files by size are all tasks that come up in real administration work — whether that is cleaning up disk space, investigating a change after an incident, or locating a script that was placed somewhere unexpected. The difference between `-mtime` and `-atime` was a useful distinction: a file that has been read but not changed would be invisible to a modify-time search, which matters when tracing unauthorized access to sensitive configuration files or private keys.
 
 ---
 
@@ -392,13 +384,15 @@ The table below summarises the calculation method for each cost component side b
 | HP LaserJet Pro M404n | SGD $9,217.00 |
 | **Canon saves** | **SGD $5,638.70** |
 
-The Canon PIXMA G3020 is significantly cheaper over five years. Its ink tank system costs a fraction of laser toner, and its 11W active power draw versus 380W for the HP means electricity costs are negligible. Even with contingency replacement units budgeted for both printers, Canon remains the more cost-effective choice. The HP M404n offers faster speeds (38 ppm vs 9 ipm) and suits mono-only, high-speed office environments where print speed and network reliability outweigh running costs.
+The Canon PIXMA G3020 is significantly cheaper over five years. Its ink tank system costs a fraction of laser toner, and its 11W active power draw, compared with 380W for the HP, means electricity costs are negligible. Even with contingency replacement units budgeted for both printers, Canon remains the more cost-effective choice. The HP M404n offers faster speeds (38 ppm vs 9 ipm) and suits mono-only, high-speed office environments where print speed and network reliability outweigh running costs.
 
 ---
 
-## Reflection Questions
+## Day 2a Reflection
 
-![Reflection Questions](lab-2a/02-Reflection%20Question4.png)
+The TCO exercise reframed how I think about cost. The instinct when comparing two products is to look at the purchase price, but the purchase price is often the smallest part of what something actually costs over time. The Canon printer costs less upfront than the HP, but the more significant difference came from consumables and electricity — the HP's laser toner and 380W power draw accumulated costs that dwarfed the initial price gap over five years. Building the spreadsheet forced every assumption to be made explicit and documented, making the conclusion traceable rather than just a feeling.
+
+The same logic applies directly to cloud infrastructure. Choosing a cloud provider based on the cheapest compute instance ignores data egress fees, snapshot storage, support tiers, and the cost of downtime if the provider has weaker SLAs. A proper TCO comparison for a cloud environment would model all of those costs across a realistic usage pattern — including peak loads, idle periods, and growth projections — before committing to a platform. The printer exercise was small in scope, but the methodology it taught is the same one used in enterprise procurement decisions worth orders of magnitude more.
 
 ---
 
@@ -604,39 +598,15 @@ A resource-monitoring script was written that first asks the user how many monit
 
 ---
 
-## Reflection Questions
+## Day 2b Reflection
 
-**What were the benefits of cloud deployment over local virtualization?**
+Provisioning a cloud VM felt very different from running something locally. The machine exists somewhere else, is accessible from anywhere, and starts accruing costs the moment it runs, which immediately makes the decisions around security groups and auto-shutdown feel real rather than academic. Opening port 22 was the first necessary step because SSH is the only way in; without it, the VM is unreachable. Opening port 80 happened after Apache was installed, not before, because there is no reason to expose a port until something is listening on it. That order of operations — install the service, then open the port — is the right discipline to build, and it is easy to do it backward and forget to close ports later.
 
-Cloud deployment removes the need for dedicated local hardware. The VM was provisioned within minutes, accessible from any device with a network connection, and could be stopped when idle to avoid unnecessary charges. Local virtualization requires a capable host machine and is not remotely accessible without additional configuration.
+The SSH key issue was an early lesson in how unforgiving security controls can be. The private key was not saved when the VM was first created, so accessing the machine required returning to the Azure portal and resetting the credentials entirely. Once the key was downloaded and in use, the `chmod 600` step was not optional — SSH refuses to connect if the private key is readable by other users, because a world-readable private key is effectively no security at all. That enforcement by the SSH client is a good example of a system that makes the secure path the only path.
 
-**How does Apache serve files, and how did you verify this?**
+Working through the Bash scripting exercises connected the command-line skills from Day 1 to something more practical. The shebang line at the top of a script tells the operating system which interpreter to run — without it, the script may not execute correctly depending on the shell environment. The for loop, if/elif/else conditional, and resource monitoring script each demonstrated a different layer of what automation can do: repeat a task, make a decision based on input, and check the state of a running system. The resource monitor reading from `/proc/net/dev` to calculate bandwidth was a good illustration of how Linux exposes system internals through the file system; instead of needing a special tool, you can read the raw data directly and calculate what you need.
 
-Apache listens on port 80 for incoming HTTP requests and serves files from the `/var/www/html/` directory. Verification was done by accessing the VM's public IP in a browser and confirming that the correct page loaded, both the default page and the modified custom page, reflecting changes made directly to the files on the server.
-
-**What did you learn about file ownership and permissions?**
-
-The chmod command controls who can read, write, or execute a file. Setting a file to 600 restricts access to the owner only. This is the required permission for SSH private keys; if the key file is readable by other users, SSH will reject it as a security risk.
-
-**What risks are associated with leaving instances running?**
-
-A running VM continues to accumulate compute charges even when no work is being performed on it. It also remains exposed to the internet, which increases the attack surface. Azure's auto-shutdown feature was configured to power down the VM at 7:00 PM UTC daily to address both concerns.
-
-**How would you explain the difference between DNS and /etc/hosts to a client?**
-
-DNS is a globally distributed system that resolves domain names to IP addresses across the Internet. The /etc/hosts file is a local override; its entries take precedence over DNS on that machine only. It is commonly used in development or testing environments to point a domain name to a local or staging server without modifying public DNS records.
-
-**What is the purpose of the shebang line in a Bash script?**
-
-The shebang line at the top of a script tells the operating system which interpreter to use when the script is executed directly. Without it, the system may not know which shell to invoke, and the script may not run as intended.
-
-**What does the free command show?**
-
-It displays current memory usage in a human-readable format, including total RAM, amount in use, amount free, shared memory, buffer, and cache usage, and the amount available for new processes. On this VM, it showed 846 Mi total RAM, with 419 Mi in use.
-
-**How would you monitor network bandwidth in a Bash script?**
-
-By reading from the /proc/net/dev file, which contains cumulative bytes transmitted and received per network interface. Sampling this file at regular intervals and calculating the difference between readings gives a real-time bandwidth figure without requiring additional tools to be installed.
+Leaving a VM running continuously is a risk on two fronts: it keeps charging even when no work is happening, and it keeps the attack surface exposed around the clock. Configuring auto-shutdown to power the VM down each evening addressed both — it bounded the cost and reduced the window during which the machine could be targeted. The distinction between DNS and `/etc/hosts` came up naturally when setting up the server: DNS propagates globally and is the right tool for a public service, while `/etc/hosts` is a local override useful in development but invisible to anyone outside the machine.
 
 ---
 
@@ -766,37 +736,17 @@ Before HTTPS could be accessed in a browser, port 443 needed to be opened in the
 
 ## Part 8 — Verify HTTPS in Browser
 
-The site was accessed via `https://xiaoxuee.duckdns.org` in a browser. The padlock icon appeared in the address bar, confirming the TLS certificate was active, trusted, and the connection was encrypted. The custom web page loaded correctly over HTTPS without any certificate warnings.
+The site was accessed via `https://xiaoxuee.duckdns.org` in a browser. The padlock icon appeared in the address bar, confirming that the TLS certificate was active and trusted, and that the connection was encrypted. The custom web page loaded correctly over HTTPS without any certificate warnings.
 
 ![HTTPS enabled — padlock visible in browser](lab-3a/08-https-browser.png)
 
 ---
 
-## Reflection Questions
+## Day 3a Reflection
 
-**Why is HTTPS important for modern web applications?**
+Day 3a was the day when all the infrastructure layers built across the previous sessions had to work together simultaneously, and that dependency made every step feel more consequential. DNS had to be configured correctly before anything else could happen — without the A record pointing to the VM's public IP, there was no domain to issue a certificate for. Verifying propagation using `nslookup` and `dig`, rather than just a browser, was important because browsers cache DNS locally, so they might show a correct result even when the global DNS system has not yet updated. The 46-second TTL that dig reported explained why DuckDNS propagated so quickly: resolvers around the world were forced to refresh their cached entries within less than a minute.
 
-HTTPS encrypts all data transmitted between the client and server, protecting it from interception, tampering, and eavesdropping. Without it, login credentials, form submissions, and session tokens are transmitted in plain text and can be captured by anyone on the same network. Modern browsers also mark HTTP sites as "Not secure", which reduces user trust and affects search engine ranking.
-
-**What entity issued your site's TLS certificate?**
-
-The certificate was issued by Let's Encrypt, a free, automated, and open certificate authority operated by the Internet Security Research Group (ISRG). It is trusted by all major browsers and operating systems.
-
-**How long is your certificate valid for, and how can it be renewed?**
-
-The certificate is valid for 90 days, expiring on 3 July 2026. Certbot automatically configures a scheduled renewal task that runs twice daily and renews the certificate when it is within 30 days of expiry. No manual intervention is required under normal circumstances.
-
-**What happens if a certificate expires and is not renewed?**
-
-Browsers will display a full-page warning blocking access to the site, stating that the connection is not private or that the certificate has expired. Most users will not proceed past this warning, effectively taking the site offline in practice. APIs and automated clients may also refuse connections with expired certificates.
-
-**Why does Let's Encrypt require port 80 or 443 to be open for verification?**
-
-Let's Encrypt uses the ACME protocol to verify that the requester controls the domain for which they are requesting a certificate. The HTTP-01 challenge method requires port 80 to be accessible so that Let's Encrypt's servers can retrieve a verification token placed on the web server. Without this, the certificate authority has no way to confirm domain ownership and will refuse to issue a certificate.
-
-**Why does DNS propagation take time?**
-
-DNS records are cached by resolvers worldwide according to each record's TTL. When a record is updated, existing cached copies remain valid until they expire. The propagation delay is the time it takes for all caches globally to expire their old entries and fetch the updated record. DuckDNS uses a short TTL, which is why propagation was nearly instant in this lab.
+The Certbot process made the interdependency of the entire stack explicit. The first run failed because only the subdomain label was entered rather than the fully qualified domain name — a straightforward input error, but one that revealed how precisely the ACME protocol validates domain names. Port 80 had to remain open even after the goal was HTTPS, because the HTTP-01 challenge Certbot uses to verify domain ownership requires Let's Encrypt's servers to retrieve a token from port 80. Only after that verification succeeded could the certificate be issued and port 443 become meaningful. Opening port 443 in the Azure NSG was then the final step — without it, the certificate existed on the server but was unreachable from the outside. The padlock appearing in the browser at the end of the day was not just a visual confirmation that HTTPS worked; it represented the complete chain from a registered domain, through DNS resolution, through a verified TLS certificate, through an open firewall rule, to an encrypted connection — every link in that chain had to be correctly configured, and a failure at any point would have broken the whole thing.
 
 ---
 
@@ -831,7 +781,7 @@ DNS records are cached by resolvers worldwide according to each record's TTL. Wh
 
 ## Objective
 
-Write a Bash script to automate file backups with date-stamped filenames, make the script available system-wide, schedule it using cron for hourly and boot-time execution, and log all output to a file. The lab was then extended by customising the server login experience using figlet and neofetch.
+Write a Bash script to automate file backups with date-stamped filenames, make it available system-wide, schedule it with cron for hourly and boot-time execution, and log all output to a file. The lab was then extended by customizing the server login experience using figlet and neofetch.
 
 ---
 
@@ -912,31 +862,11 @@ Both tools were run after installation to verify the output. figlet rendered a W
 
 ---
 
-## Reflection Questions
+## Day 3b Reflection
 
-**Why is using absolute paths important in scripts run by cron?**
+Day 3b brought together the scripting skills from Day 2b and applied them to a real operational problem: reliable, automated backup. Writing the script was straightforward once the logic was clear: generate a timestamp, copy the source directory, zip it, log the result — but getting it to run correctly under cron required understanding why the same script behaves differently in an automated context. Cron executes in a minimal shell environment with a restricted PATH, meaning a command like `zip` that works perfectly in an interactive terminal may not be found at all when cron runs the script. Using absolute paths throughout, both in the script and in the crontab entry itself, was not an optional tidiness measure — it was what made the difference between a script that works reliably and one that fails silently at 2 am with no indication of what went wrong.
 
-Cron jobs run in a minimal environment with a restricted PATH variable, meaning commands and file references that work interactively may not be found when cron executes the same script. Using absolute paths such as `/usr/bin/zip` and `/home/azureuser/backup/` ensures the script functions correctly regardless of the environment in which it runs.
-
-**What are the benefits of cloud exporting for backups?**
-
-Storing backups on a remote cloud server ensures they survive local failures — if the primary server is lost, corrupted, or compromised, the backup remains intact and accessible. Cloud export also supports geographic redundancy, version history, and centralized backup management across multiple servers.
-
-**How does cron differ from manual execution?**
-
-Manual execution requires a user to be logged in and to run the command actively. Cron runs automatically at scheduled intervals, without user interaction, even when no one is logged in to the server. This makes it suitable for routine maintenance tasks that must run reliably and consistently regardless of human availability.
-
-**What happens if SSH keys are not accepted ahead of time?**
-
-The SCP command used to transfer backups to a remote server requires the remote host's fingerprint to be accepted before the transfer can proceed unattended. If the fingerprint has not been accepted, the SSH handshake will pause and prompt for confirmation — causing the cron job to hang or fail silently, as there is no interactive terminal available during cron execution.
-
-**Why was the SCP cloud export step not completed?**
-
-The SCP transfer step requires a second cloud server to act as the backup destination. In this lab environment, only one VM was provisioned, so no remote target was available. In a production environment, this step would be implemented by provisioning a dedicated backup server or storage instance, pre-accepting its SSH fingerprint, and embedding the SCP command with an absolute key path directly in the backup script.
-
-**How can login messages help improve user and system engagement?**
-
-Tools such as figlet and neofetch can display system information, hostname, resource usage, and custom banners when a user logs in via SSH. This improves situational awareness by immediately showing the system state and can also serve as a reminder of the server's purpose or environment — particularly useful in environments with multiple servers, where administrators need to confirm which machine they are connected to.
+The `@reboot` crontab entry extended this thinking further: a backup that runs only hourly provides no protection during the window between a server starting and the first scheduled run. Adding a boot-time execution entry ensured the server would always have a current backup, regardless of when it last ran. The SCP cloud export step could not be completed because only one VM was provisioned, and without a second server, there is no remote destination. This was a genuine limitation rather than a configuration error, and it highlighted an important aspect of backup strategy: a backup stored on the same machine as the data it protects offers no resilience against the failure of that machine. The figlet and neofetch work at the end of the day was lighter, but it reinforced the same principle that appeared throughout the module in environments with multiple servers; every detail that helps an administrator immediately orient themselves when they connect reduces the risk of making a change on the wrong machine.
 
 ---
 
@@ -1037,19 +967,15 @@ An `UPDATE` statement was used to change Bob's grade from B to A+. A `DELETE` st
 
 ---
 
-## Reflection Questions
+## Day 4 Reflection
 
-**What is the purpose of a primary key in a database table?**
+Deploying MariaDB independently was a different kind of challenge from the earlier labs. The installation itself was straightforward, but the work that followed, creating a database, defining a table schema, inserting records, and then modifying and deleting them, required thinking about data integrity rather than just commands. The primary key on the `students` table is what made the UPDATE and DELETE statements safe to run: without it, there is no reliable way to target a specific row, and a missing WHERE clause would affect every record in the table. That is not a theoretical risk — it is one of the most common causes of accidental data loss in production databases.
 
-A primary key uniquely identifies each row in a table and prevents duplicate records from being inserted. It also serves as the reference point for UPDATE and DELETE operations, ensuring that changes target the correct record without ambiguity.
+The CRUD exercise also made it clear that installing a service is only the beginning. A default MariaDB installation includes anonymous user accounts and a test database that require no authentication, which means the database is effectively open to any local process or user until `mysql_secure_installation` is run. The labs were conducted in a controlled environment where the VM's NSG blocked external access to port 3306, providing a layer of network protection, but in a production deployment, that layer cannot be the only one. Securing the database at the application level — removing anonymous accounts, setting a strong root password, and restricting remote root login is not optional.
 
-**Why is MariaDB described as a drop-in replacement for MySQL?**
+The choice of MariaDB over MySQL is worth reflecting on. MariaDB maintains full compatibility with MySQL's SQL syntax and client libraries, meaning any application built for MySQL connects to MariaDB without modification. The practical implication is that MariaDB can be substituted into existing infrastructure without rewriting application code — a significant advantage when migrating or consolidating database services. Understanding why two tools are interchangeable, rather than just knowing they are, matters when making deployment decisions in environments where compatibility is required.
 
-MariaDB was forked from MySQL and maintains full compatibility with MySQL's SQL syntax, client libraries, and connection protocols. Applications written for MySQL can connect to MariaDB without modification, making it straightforward to substitute one for the other in existing deployments.
-
-**What is the risk of running MariaDB without securing the installation?**
-
-A default MariaDB installation includes anonymous user accounts and a test database that are accessible without authentication. Without running `mysql_secure_installation`, these accounts could be exploited by local users or applications to access or modify data without authorization.
+Across all four days, the consistent thread was that no component works in isolation. SSH access depends on the correct permissions for the SSH key. Apache serving content depends on the correct NSG rule. Certbot issuing a certificate depends on DNS resolving and port 80 being open. Cron running a backup depends on absolute paths in the script. MariaDB's data protection depends on post-installation hardening. Each layer builds on the one before it, and a gap at any level undermines everything above it.
 
 ---
 
