@@ -13,9 +13,9 @@
 
 This repository documents my hands-on lab work for the BRG-27 Infrastructure Systems Engineering Activity module at Murdoch University. Each folder corresponds to a lab session covering a core area of Linux administration, cloud infrastructure, and server management.
 
-The labs progress from foundational Linux skills, setting up the environment, navigating the file system, managing services and permissions, through to real-world infrastructure topics such as cloud provisioning on AWS, DNS configuration, SSL certificates, and shell scripting automation.
+The labs progress from foundational Linux skills, setting up the environment, navigating the file system, managing services and permissions, through to real-world infrastructure topics such as cloud provisioning on Microsoft Azure, DNS configuration, SSL certificates, and shell scripting automation.
 
-All Linux lab work was performed on Ubuntu 24.04.4 LTS running natively on Windows 11 via WSL 2. Cloud labs were performed on Amazon Web Services (AWS) using the free tier. Each lab folder contains a written walkthrough of the steps taken, commands used, observations made, and reflections on what was learned. Screenshots are included as evidence of hands-on completion.
+All Linux lab work was performed on Ubuntu 24.04.4 LTS running natively on Windows 11 via WSL 2. Cloud labs were performed on Microsoft Azure using a Standard B2ats v2 virtual machine. Each lab folder contains a written walkthrough of the steps taken, commands used, observations made, and reflections on what was learned. Screenshots are included as evidence of hands-on completion.
 
 This repository also serves as preparation for the final video demonstration, where all lab work and key technical concepts will be presented and explained.
 
@@ -66,6 +66,9 @@ Get hands-on with core Linux administration from basic command line navigation t
 - Use SSH and SCP for remote access and file transfer
 - Create and manage users and understand privilege separation
 - Compress and decompress files using tar and bzip2
+- Apply file permissions using chmod and transfer ownership using chown
+- Configure Access Control Lists using setfacl and getfacl
+- Search the file system using find with name, time, and size filters
 
 ---
 
@@ -209,6 +212,50 @@ Compressed the tar archive using `bzip2`, then decompressed and extracted it to 
 
 ---
 
+## Part 16 — User Management and Privilege Escalation (Azure VM)
+
+A new user named `labuser` was created on the Azure VM using `sudo adduser labuser`. The account was then added to the `sudo` group using `sudo usermod -aG sudo labuser`. The `groups labuser` command confirmed that `labuser` was a member of the `labuser`, `sudo`, and `users` groups, verifying that administrative access was granted explicitly and intentionally rather than by default. This reinforces the principle of least privilege — users should only receive the minimum permissions required for their role.
+
+![adduser and usermod — labuser added to sudo group](lab-1b/01-adduser-usermod.png)
+
+---
+
+## Part 17 — File Ownership with chown
+
+A test file named `acltest.txt` was created in the azureuser home directory. Its ownership was then transferred to `labuser` using `sudo chown labuser /home/azureuser/acltest.txt`. The `ls -la` command confirmed that the file owner was updated from `azureuser` to `labuser`, while the group remained unchanged. Transferring file ownership is used in production environments when files need to be managed by a different user account, such as when a service is deployed under a dedicated non-root user.
+
+![chown transferring file ownership to labuser](lab-1b/02-chown.png)
+
+---
+
+## Part 18 — File Permission Levels with chmod
+
+Two distinct permission states were applied to `acltest.txt` to demonstrate the practical effect of the Unix permission model. First, `chmod 700` restricted access entirely to the file owner, producing `rwx------`. This is the appropriate permission level for private scripts or sensitive configuration files. Second, `chmod 644` was applied, producing `rw-r--r--`, granting the owner read and write access while allowing all other users read-only access. This is the standard permission level for web-served content and shared reference files. Both states were confirmed using `ls -la`.
+
+![chmod 700 and chmod 644 permission states confirmed](lab-1b/03-chmod.png)
+
+---
+
+## Part 19 — Access Control Lists with setfacl and getfacl
+
+Access Control Lists (ACLs) extend the standard Unix permission model by allowing fine-grained access rules for specific named users or groups, independent of the file owner and group. The `acl` package was installed using `sudo apt install acl -y`. An ACL entry was then applied to `acltest.txt` using `sudo setfacl -m u:azureuser:rw /home/azureuser/acltest.txt`, granting explicit read-write access to the `azureuser` account at the ACL level. The `getfacl` command confirmed the entry was applied correctly, displaying `user::rw-`, `user:azureuser:rw-`, `group::rw-`, `mask::rw-`, and `other::r--`.
+
+ACLs are particularly useful when multiple users or processes require different levels of access to a shared file without changing its primary owner or group — a common requirement in multi-user server environments.
+
+![setfacl applied and getfacl output confirming ACL entries](lab-1b/16-acl-setfacl-getfacl.png)
+
+---
+
+## Part 20 — File System Search with find
+
+The `find` command was used to search the Azure VM file system by multiple criteria. Running `find /home/azureuser -name "*.zip"` returned all ZIP archives created by the automated backup script, providing a clear audit trail of backup activity. The `-mtime -1` flag filtered for files modified within the last 24 hours, and `-size +1M` identified files larger than one megabyte. The `locate` command was also tested using the `plocate` package (the Ubuntu 24.04 replacement for `mlocate`), returning the full path of the `testscript` binary in `/usr/bin/`.
+
+These search techniques are essential for routine system maintenance — identifying old backups consuming disk space, locating recently modified files after an incident, and auditing large files before storage runs out.
+
+![find results showing zip archives, mtime filter, size filter, and locate output](lab-1b/15-find-locate.png)
+
+---
+
 ## Challenge Activities
 
 ### Challenge 1 — Remote File Creation via SSH
@@ -237,24 +284,44 @@ Used SCP to transfer a single file and recursively copy the entire `books/` dire
 |-------|------------|
 | `bzip2` not installed | Ran `sudo apt install bzip2 -y` |
 | `gedit` failed over SSH | Expected GUI apps require `ssh -X` for display forwarding |
+| `mlocate` package unavailable on Ubuntu 24.04 | Used `plocate` instead, which is the current replacement package |
 
 ---
 
 ## Outcome
 
-- Navigated the Linux file system using `pwd`, `ls`, `cd`, `mkdir`, and `touch.`
+- Navigated the Linux file system using `pwd`, `ls`, `cd`, `mkdir`, and `touch`
 - Installed and tested the Apache web server, edited `index.html` using nano
-- Scanned open ports using Nmap before and after removing Apache, and confirmed that port 80 disappeared
+- Scanned open ports using Nmap before and after removing Apache, confirming port 80 disappeared when the service was removed
 - Configured UFW firewall rules and observed independent control over service accessibility
 - Created a new user and SSH'd between accounts using the loopback address
-- Downloaded files with `wget`, compressed with `tar` and `bzip2`, transferred with `scp.`
+- Downloaded files with `wget`, compressed with `tar` and `bzip2`, transferred with `scp`
 - Demonstrated privilege escalation with `sudo` and discussed the principle of least privilege
+- Created a new user `labuser` and added them to the `sudo` group using `usermod`
+- Transferred file ownership using `chown` and verified the change with `ls -la`
+- Applied and compared file permission levels using `chmod 700` and `chmod 644`
+- Configured an Access Control List using `setfacl` and verified it using `getfacl`
+- Searched the file system using `find` with name, modification time, and size filters
 
 ---
 
-## Reflection
+## Reflection Questions
 
-Using `127.0.0.1` as a loopback to simulate a partner was a practical way to test SSH and SCP without needing a second machine. The Nmap exercise clearly showed that removing a service closes its port; a running service and a firewall rule are two independent controls. The gedit failure over SSH was a good reminder that servers are headless by default and all administration must be done through the terminal.
+**Why simulate multiple users and groups in a lab environment?**
+
+Simulating multiple users allows the effects of permission controls to be observed directly. Without a second account, it is impossible to verify whether a file set to `700` is actually inaccessible to other users, or whether an ACL entry grants the intended access. Real server environments always involve multiple accounts — service accounts, admin accounts, and application users — making multi-user testing essential.
+
+**Why use ACLs over basic chmod?**
+
+The standard Unix permission model allows only three permission classes: owner, group, and others. In environments where a file must be accessible to a specific named user who is not the owner and not in the owner's group, chmod alone cannot express this without granting broader access to the entire others class. ACLs allow named users and groups to be assigned specific permissions independently of the file owner, enabling fine-grained access control without compromising security.
+
+**Why avoid chmod 777 even in testing?**
+
+Setting a file or directory to `777` grants read, write, and execute permissions to every user on the system, including service accounts and other processes. In a testing environment this may seem harmless, but it establishes habits that are dangerous in production. Scripts with `777` permissions can be modified by any process on the system, making them a vector for privilege escalation if exploited. The correct approach is to apply only the permissions actually required and to validate them using `ls -la` and `getfacl`.
+
+**Why search by access time rather than modify time in security contexts?**
+
+Modification time (`-mtime`) records when a file's contents were last changed. Access time (`-atime`) records when the file was last read. In a security investigation, a file that has been read without being modified — for example, a configuration file or private key accessed by an unauthorised process — would not appear in a `-mtime` search but would appear in an `-atime` search. Using `-atime` provides visibility into read access that `-mtime` alone would miss.
 
 ---
 
@@ -1002,4 +1069,3 @@ A default MariaDB installation includes anonymous user accounts and a test datab
 - Inserted, queried, updated, and deleted records to demonstrate full CRUD functionality
 
 ---
-
